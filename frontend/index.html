@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Breakup Arbitrator — Powered by GenLayer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background particles -->
+  <div class="bg-particles" id="particles"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">⚖️</span>
+      <span class="logo-text">AI <span class="logo-highlight">Arbitrator</span></span>
+    </div>
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      Powered by GenLayer
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-tag">🔗 On-Chain · AI-Powered · Trustless</div>
+      <h1 class="hero-title">
+        Fair Breakup.<br/>
+        <span class="gradient-text">No Lawyers. Just AI.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Couples register shared assets on-chain. When it ends, both submit their side in plain English — 
+        and our AI judge divides everything fairly. Resolution in hours, not months.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="showDemo()">See It In Action</button>
+        <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How It Works</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-val">~1hr</span><span class="stat-label">Resolution Time</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-val">$0</span><span class="stat-label">Lawyer Fees</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-val">100%</span><span class="stat-label">On-Chain & Transparent</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="scale-container">
+        <div class="scale-arm">
+          <div class="scale-pan left-pan">
+            <div class="pan-item">🏠 Apartment</div>
+            <div class="pan-item">🚗 Tesla</div>
+          </div>
+          <div class="scale-pivot">⚖️</div>
+          <div class="scale-pan right-pan">
+            <div class="pan-item">💰 Savings</div>
+            <div class="pan-item">🎨 Art</div>
+          </div>
+        </div>
+        <div class="ai-badge-float">
+          <span>AI</span> Judging...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section" id="how">
+    <div class="section-header">
+      <div class="section-tag">Simple Process</div>
+      <h2>How It Works</h2>
+      <p>Six steps from shared life to fair resolution</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">🏦</div>
+        <h3>Register Assets</h3>
+        <p>Both partners register shared assets in natural language: apartment, car, investments, pets — anything.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🔒</div>
+        <h3>Lock the Contract</h3>
+        <p>Activate to freeze the asset list. No new assets can be added after this point.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">📝</div>
+        <h3>Tell Your Side</h3>
+        <p>Each partner writes their case in plain English — contributions, context, what they need and why.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">📎</div>
+        <h3>Submit Evidence</h3>
+        <p>Attach bank statements, chat logs, photos, rental records — any supporting evidence as text or links.</p>
+      </div>
+      <div class="step-card highlight-card">
+        <div class="step-num">05</div>
+        <div class="step-icon">🤖</div>
+        <h3>AI Deliberates</h3>
+        <p>GenLayer's AI reads both sides and all evidence. Multiple validator nodes reach consensus on a fair verdict.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">06</div>
+        <div class="step-icon">⚖️</div>
+        <h3>Binding Verdict</h3>
+        <p>The ruling is written on-chain, permanent and transparent. Who gets what, and exactly why.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demo -->
+  <section class="demo-section" id="demo">
+    <div class="section-header">
+      <div class="section-tag">Live Demo</div>
+      <h2>Watch a Case Unfold</h2>
+      <p>Step through a real arbitration scenario</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-container">
+      <div class="progress-steps">
+        <div class="prog-step active" data-step="0">
+          <div class="prog-dot"><span>🏠</span></div>
+          <span class="prog-label">Assets</span>
+        </div>
+        <div class="prog-line"></div>
+        <div class="prog-step" data-step="1">
+          <div class="prog-dot"><span>📝</span></div>
+          <span class="prog-label">Cases</span>
+        </div>
+        <div class="prog-line"></div>
+        <div class="prog-step" data-step="2">
+          <div class="prog-dot"><span>📎</span></div>
+          <span class="prog-label">Evidence</span>
+        </div>
+        <div class="prog-line"></div>
+        <div class="prog-step" data-step="3">
+          <div class="prog-dot"><span>🤖</span></div>
+          <span class="prog-label">AI Ruling</span>
+        </div>
+        <div class="prog-line"></div>
+        <div class="prog-step" data-step="4">
+          <div class="prog-dot"><span>⚖️</span></div>
+          <span class="prog-label">Verdict</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Panels -->
+    <div class="demo-panel active" id="panel-0">
+      <h3 class="panel-title">Registered Shared Assets</h3>
+      <p class="panel-sub">Alex & Jordan's 6-year relationship — assets registered on-chain</p>
+      <div class="assets-grid">
+        <div class="asset-card">
+          <span class="asset-icon">🏠</span>
+          <div>
+            <div class="asset-name">Downtown Apartment</div>
+            <div class="asset-val">Est. $620,000</div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <span class="asset-icon">🚗</span>
+          <div>
+            <div class="asset-name">2022 Tesla Model 3</div>
+            <div class="asset-val">Est. $42,000</div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <span class="asset-icon">💰</span>
+          <div>
+            <div class="asset-name">Joint Savings Account</div>
+            <div class="asset-val">$87,500</div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <span class="asset-icon">🎨</span>
+          <div>
+            <div class="asset-name">Art Collection (12 pieces)</div>
+            <div class="asset-val">Est. $28,000</div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <span class="asset-icon">🐕</span>
+          <div>
+            <div class="asset-name">Dog — Mochi</div>
+            <div class="asset-val">Priceless</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-panel" id="panel-1">
+      <h3 class="panel-title">Both Partners Have Spoken</h3>
+      <div class="cases-grid">
+        <div class="case-card partner-a">
+          <div class="case-header">
+            <div class="partner-avatar a">A</div>
+            <div>
+              <div class="partner-name">Alex</div>
+              <div class="partner-role">Partner A</div>
+            </div>
+          </div>
+          <div class="case-text">
+            "I paid the mortgage for all 6 years — $2,800/month. I also purchased the Tesla outright from my savings before we met. The art collection was curated and funded almost entirely by me. I work from home and Mochi is my emotional support animal. Jordan contributed to groceries and utilities but never to the major assets."
+          </div>
+          <div class="case-tag">✅ Submitted on-chain</div>
+        </div>
+        <div class="case-card partner-b">
+          <div class="case-header">
+            <div class="partner-avatar b">B</div>
+            <div>
+              <div class="partner-name">Jordan</div>
+              <div class="partner-role">Partner B</div>
+            </div>
+          </div>
+          <div class="case-text">
+            "I relocated my entire life and gave up a $95k/year job to support Alex's career. I handled all home maintenance, renovations (which I project-managed and partly funded), and built our savings from $12k to $87k through disciplined budgeting. Mochi was my adoption — I found her, adopted her, and am her primary caregiver."
+          </div>
+          <div class="case-tag">✅ Submitted on-chain</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-panel" id="panel-2">
+      <h3 class="panel-title">Evidence Submitted</h3>
+      <div class="evidence-grid">
+        <div class="evidence-col">
+          <div class="ev-header partner-a-col">
+            <div class="partner-avatar a sm">A</div>
+            Alex's Evidence
+          </div>
+          <div class="ev-item">🏦 6 years of mortgage statements showing sole payer</div>
+          <div class="ev-item">🧾 Tesla purchase receipt — dated 2 years before relationship</div>
+          <div class="ev-item">🎨 Art gallery invoices — 9 of 12 pieces purchased by Alex</div>
+          <div class="ev-item">💊 Therapist letter confirming ESA relationship with Mochi</div>
+        </div>
+        <div class="evidence-col">
+          <div class="ev-header partner-b-col">
+            <div class="partner-avatar b sm">B</div>
+            Jordan's Evidence
+          </div>
+          <div class="ev-item">📉 Pay stubs showing salary reduction after relocation</div>
+          <div class="ev-item">🔨 Home renovation receipts totaling $34,000</div>
+          <div class="ev-item">📈 Bank records showing savings grew from $12k to $87k</div>
+          <div class="ev-item">🐾 Vet records — Jordan listed as primary owner for 5 years</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-panel" id="panel-3">
+      <h3 class="panel-title">AI Deliberating…</h3>
+      <div class="deliberation-container">
+        <div class="ai-thinking">
+          <div class="thinking-ring"></div>
+          <div class="thinking-ring ring2"></div>
+          <div class="thinking-ring ring3"></div>
+          <div class="ai-core">🤖</div>
+        </div>
+        <div class="thinking-steps">
+          <div class="think-step done">✅ Reading both statements</div>
+          <div class="think-step done">✅ Analyzing evidence strength</div>
+          <div class="think-step done">✅ Evaluating financial contributions</div>
+          <div class="think-step done">✅ Assessing lifestyle sacrifices</div>
+          <div class="think-step active">⚡ Reaching validator consensus (5 nodes)</div>
+          <div class="think-step">⏳ Writing binding verdict</div>
+        </div>
+        <div class="consensus-nodes">
+          <div class="node active">Node 1 ✓</div>
+          <div class="node active">Node 2 ✓</div>
+          <div class="node active">Node 3 ✓</div>
+          <div class="node pulsing">Node 4…</div>
+          <div class="node">Node 5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-panel" id="panel-4">
+      <h3 class="panel-title verdict-title">⚖️ The Verdict</h3>
+      <p class="panel-sub">Consensus reached — binding and permanent on GenLayer blockchain</p>
+      <div class="verdict-container">
+        <div class="verdict-item">
+          <div class="vi-asset">🏠 Downtown Apartment</div>
+          <div class="vi-ruling">
+            <span class="ruling-badge split">Split 70% / 30%</span>
+            <span class="vi-to">Alex 70% · Jordan 30%</span>
+          </div>
+          <div class="vi-reason">Alex paid mortgage exclusively for 6 years. Jordan's renovation contribution ($34K) justifies a meaningful minority stake. Market value to be determined and Jordan compensated in cash.</div>
+        </div>
+        <div class="verdict-item">
+          <div class="vi-asset">🚗 Tesla Model 3</div>
+          <div class="vi-ruling">
+            <span class="ruling-badge to-a">Awarded to Alex</span>
+          </div>
+          <div class="vi-reason">Purchased outright by Alex before the relationship began. Pre-relationship asset, not subject to division.</div>
+        </div>
+        <div class="verdict-item">
+          <div class="vi-asset">💰 Joint Savings ($87,500)</div>
+          <div class="vi-ruling">
+            <span class="ruling-badge split">Split 40% / 60%</span>
+            <span class="vi-to">Alex 40% · Jordan 60%</span>
+          </div>
+          <div class="vi-reason">Jordan demonstrably grew savings from $12K to $87K through disciplined budgeting and career sacrifice. Jordan's contribution is outsized relative to starting balance.</div>
+        </div>
+        <div class="verdict-item">
+          <div class="vi-asset">🎨 Art Collection</div>
+          <div class="vi-ruling">
+            <span class="ruling-badge to-a">Awarded to Alex</span>
+          </div>
+          <div class="vi-reason">9 of 12 pieces purchased by Alex per gallery invoices. Remaining 3 joint pieces to be auctioned with proceeds split equally.</div>
+        </div>
+        <div class="verdict-item">
+          <div class="vi-asset">🐕 Mochi (Dog)</div>
+          <div class="vi-ruling">
+            <span class="ruling-badge to-b">Awarded to Jordan</span>
+          </div>
+          <div class="vi-reason">Jordan is the legal adopter and listed as primary owner in 5 years of vet records. Alex's ESA designation, while noted, does not supersede legal ownership. Visitation rights recommended.</div>
+        </div>
+        <div class="verdict-summary">
+          <h4>⚖️ Summary</h4>
+          <p>Both partners made substantial but different contributions. Alex's financial dominance in major assets is balanced by Jordan's career sacrifice and savings management. The division reflects proportional contribution while accounting for pre-relationship assets and documented caregiving roles.</p>
+          <div class="verdict-hash">On-chain tx: 0xe3200a2bf5a9dd85...b87336d0 · GenLayer Testnet</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-nav">
+      <button class="btn-ghost" id="prev-btn" onclick="changePanel(-1)" disabled>← Previous</button>
+      <div class="panel-counter"><span id="current-panel">1</span> / 5</div>
+      <button class="btn-primary" id="next-btn" onclick="changePanel(1)">Next →</button>
+    </div>
+  </section>
+
+  <!-- Tech Section -->
+  <section class="tech-section">
+    <div class="section-header">
+      <div class="section-tag">Under The Hood</div>
+      <h2>Built on GenLayer</h2>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">🧠</div>
+        <h3>Intelligent Contract</h3>
+        <p>Written in Python with native LLM access via <code>gl.nondet.exec_prompt</code> — no external APIs needed.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔀</div>
+        <h3>Optimistic Democracy</h3>
+        <p>5 validator nodes independently reach consensus using <code>prompt_non_comparative</code> equivalence.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📦</div>
+        <h3>On-Chain Storage</h3>
+        <p>All cases, evidence, and verdicts stored permanently using GenLayer's storage primitives.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">⛓️</div>
+        <h3>Trustless & Final</h3>
+        <p>No single party controls the outcome. The verdict is cryptographically signed by consensus.</p>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">breakup_arbitrator.py</span>
+      </div>
+      <pre class="code-block"><span class="code-comment"># AI arbitration with validator consensus</span>
+<span class="code-keyword">def</span> <span class="code-fn">request_resolution</span>(self):
+    ruling = gl.eq_principle.prompt_non_comparative(
+        <span class="code-keyword">lambda</span>: self.<span class="code-fn">_build_prompt</span>(),
+        task=<span class="code-str">"Divide assets fairly based on evidence"</span>,
+        criteria=<span class="code-str">"Impartial, evidence-based, every asset addressed"</span>
+    )
+    self.resolution = ruling
+    self.status = <span class="code-str">"resolved"</span>  <span class="code-comment"># ✅ Binding</span></pre>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <span class="logo-icon">⚖️</span>
+        <span class="logo-text">AI <span class="logo-highlight">Arbitrator</span></span>
+      </div>
+      <p class="footer-desc">A GenLayer Intelligent Contract showcasing AI-powered on-chain dispute resolution.</p>
+      <div class="footer-links">
+        <a href="https://genlayer.com" target="_blank">GenLayer</a>
+        <a href="https://studio.genlayer.com" target="_blank">Studio</a>
+        <a href="https://docs.genlayer.com" target="_blank">Docs</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      Built with ❤️ for the future of trustless dispute resolution
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

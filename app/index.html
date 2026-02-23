@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Breakup Arbitrator — Powered by GenLayer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <div class="bg-particles" id="particles"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">⚖️</span>
+      <span class="logo-text">AI <span class="logo-highlight">Arbitrator</span></span>
+    </div>
+    <div class="header-right">
+      <div id="status-badge" class="status-badge status-unknown">
+        <span class="badge-dot"></span>
+        <span id="status-text">Connecting…</span>
+      </div>
+      <div class="header-badge">
+        <span class="badge-dot green"></span>
+        GenLayer Studionet
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== SETUP SCREEN (shown before wallet connect) ===== -->
+  <div id="setup-screen" class="setup-screen">
+    <div class="setup-hero">
+      <div class="setup-icon">⚖️</div>
+      <h1 class="setup-title">AI Breakup <span class="gradient-text">Arbitrator</span></h1>
+      <p class="setup-sub">Two people. One AI judge. Fair division of shared assets — on-chain, no lawyers.</p>
+    </div>
+
+    <!-- Tab: Join or Create -->
+    <div class="setup-tabs">
+      <button class="tab-btn active" id="tab-join" onclick="switchTab('join')">Join Existing</button>
+      <button class="tab-btn" id="tab-create" onclick="switchTab('create')">Create New</button>
+    </div>
+
+    <!-- Join existing contract -->
+    <div class="setup-panel" id="panel-join">
+      <div class="setup-card">
+        <div class="your-address-box">
+          <span class="ya-label">🔑 Your Studionet Address</span>
+          <div class="ya-addr my-address-display" id="my-address-join">loading...</div>
+          <button class="btn-ghost sm" onclick="copyMyAddress()">📋 Copy</button>
+          <p class="ya-hint">This is your auto-generated identity. Share it with your partner before they deploy.</p>
+        </div>
+        <div class="setup-divider">then</div>
+        <h3>📋 Enter Contract Address</h3>
+        <p class="card-sub">Paste the contract address shared by your partner.</p>
+        <input id="contract-input" type="text" class="app-input full-width" placeholder="0x... contract address" />
+        <br /><br />
+        <button class="btn-primary full-width" style="padding:0.85rem;" onclick="joinContract()">
+          ⚡ Join Arbitration
+        </button>
+        <div id="connect-error" class="error-msg hidden"></div>
+      </div>
+    </div>
+
+    <!-- Create new contract -->
+    <div class="setup-panel hidden" id="panel-create">
+      <div class="setup-card">
+        <div class="your-address-box">
+          <span class="ya-label">🔑 Your Address (Partner A)</span>
+          <div class="ya-addr my-address-display" id="my-address-create">loading...</div>
+          <button class="btn-ghost sm" onclick="copyMyAddress()">📋 Copy</button>
+          <p class="ya-hint">Your partner needs to visit the app on their device first, copy their address, and send it
+            to you.</p>
+        </div>
+        <div class="setup-divider">then</div>
+        <h3>👩 Partner B Address</h3>
+        <p class="card-sub">Ask your partner to open this app and copy their address, then paste it here.</p>
+        <input id="pb-input" type="text" class="app-input full-width mb-sm" placeholder="0x... Partner B's address" />
+        <br /><br />
+        <button class="btn-primary full-width" style="padding:0.85rem;" onclick="deployAndJoin()">
+          🚀 Create Arbitration Contract
+        </button>
+        <div id="deploy-status" class="deploy-status hidden"></div>
+        <div class="pk-hint" style="margin-top:0.75rem;">
+          ⚙️ Requires the deployment server: <code
+            style="font-size:0.75rem;background:var(--bg3);padding:0.15rem 0.4rem;border-radius:4px;">node server.js</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP (shown after wallet connect) ===== -->
+  <div id="app-screen" class="hidden">
+
+    <!-- Role banner -->
+    <div class="role-banner" id="role-banner">
+      <div class="role-info">
+        <div class="role-avatar" id="role-avatar">?</div>
+        <div>
+          <div class="role-name" id="role-name">Identifying…</div>
+          <div class="role-address" id="role-address"></div>
+        </div>
+      </div>
+      <div class="role-contract">
+        <span class="rc-label">Contract</span>
+        <span class="rc-addr" id="rc-addr">—</span>
+        <button class="btn-copy" id="share-btn" onclick="shareLink()" title="Copy shareable link">🔗 Share Link</button>
+      </div>
+    </div>
+
+    <div class="app-section">
+
+      <!-- Contract Status -->
+      <div class="app-card">
+        <div class="card-header-row">
+          <h3 class="card-title">📊 Contract Status</h3>
+          <button class="btn-ghost sm" onclick="refreshStatus()">↻ Refresh</button>
+        </div>
+        <div class="status-grid">
+          <div class="status-item"><span class="si-label">Phase</span><span class="si-val" id="si-status">—</span></div>
+          <div class="status-item"><span class="si-label">Partner A</span><span class="si-val address-small"
+              id="si-pa">—</span></div>
+          <div class="status-item"><span class="si-label">Partner B</span><span class="si-val address-small"
+              id="si-pb">—</span></div>
+        </div>
+        <div id="assets-list"></div>
+      </div>
+
+      <!-- SETUP: Add Asset -->
+      <div class="app-card phase-card" data-phase="setup" id="card-add-asset">
+        <h3 class="card-title">🏠 Add Shared Asset</h3>
+        <p class="card-sub">Both partners can add assets during setup. Be specific — the AI uses these descriptions in
+          its ruling.</p>
+        <div class="input-row">
+          <input id="asset-input" type="text" class="app-input"
+            placeholder="e.g. Downtown apartment worth $500K, jointly purchased in 2020" />
+          <button class="btn-primary" onclick="addAsset()">Add</button>
+        </div>
+      </div>
+
+      <!-- SETUP: Activate (both must agree — any partner can trigger) -->
+      <div class="app-card phase-card" data-phase="setup" id="card-activate">
+        <h3 class="card-title">🔒 Lock & Activate</h3>
+        <p class="card-sub">Once activated, the asset list is frozen and both partners can submit their cases. Either
+          partner can activate.</p>
+        <button class="btn-primary" onclick="activate()">Activate Contract</button>
+      </div>
+
+      <!-- ACTIVE / DISPUTE: My Case -->
+      <div class="app-card phase-card" data-phase="active,dispute" id="card-case">
+        <div class="card-header-row">
+          <h3 class="card-title">📝 <span id="my-case-title">Your Case</span></h3>
+          <div class="submitted-badge hidden" id="case-submitted-badge">✅ Submitted</div>
+        </div>
+        <p class="card-sub" id="my-case-sub">Write your full story — financial contributions, sacrifices, what you need
+          and why. Plain English, as detailed as possible.</p>
+        <textarea id="case-input" class="app-textarea" rows="6"
+          placeholder="I paid the mortgage every month for 5 years ($2,400/month). I also relocated my career to support my partner and gave up a $80K/yr job. The car was a gift from my parents before we were married…"></textarea>
+        <button class="btn-primary" id="case-btn" onclick="submitCase()">Submit My Case</button>
+      </div>
+
+      <!-- ACTIVE / DISPUTE: Evidence -->
+      <div class="app-card phase-card" data-phase="active,dispute" id="card-evidence">
+        <h3 class="card-title">📎 My Evidence</h3>
+        <p class="card-sub">Add supporting items one by one — bank statements, receipts, vet records, chat logs. Paste
+          text excerpts or URLs.</p>
+        <div id="my-evidence-list" class="evidence-submitted-list"></div>
+        <div class="input-row">
+          <input id="evidence-input" type="text" class="app-input"
+            placeholder="e.g. 36 months of mortgage statements showing only my name as payer" />
+          <button class="btn-primary" onclick="submitEvidence()">Add</button>
+        </div>
+      </div>
+
+      <!-- DISPUTE: Both cases in — request resolution -->
+      <div class="app-card phase-card" data-phase="dispute" id="card-resolution">
+        <h3 class="card-title">🤖 Request AI Ruling</h3>
+        <p class="card-sub">Both cases are submitted. Either partner can trigger the AI arbitration. GenLayer validator
+          nodes will reach consensus on a fair verdict. Takes ~60 seconds.</p>
+        <div class="resolution-both-cases" id="resolution-preview">
+          <div class="rp-partner a"><strong>Partner A</strong> ✅ Case submitted</div>
+          <div class="rp-partner b"><strong>Partner B</strong> ✅ Case submitted</div>
+        </div>
+        <button class="btn-primary" id="resolve-btn" onclick="requestResolution()">⚡ Start AI Arbitration</button>
+      </div>
+
+      <!-- RESOLVED: Verdict -->
+      <div class="app-card phase-card" data-phase="resolved" id="card-verdict">
+        <h3 class="card-title verdict-title">⚖️ The Verdict</h3>
+        <p class="card-sub">Consensus reached — binding and permanent on the GenLayer blockchain</p>
+        <div id="verdict-text" class="verdict-text"></div>
+        <button class="btn-ghost sm" onclick="loadVerdict()">↻ Reload</button>
+      </div>
+
+      <!-- TX Log -->
+      <div class="app-card">
+        <h3 class="card-title">🔗 My Transactions</h3>
+        <div id="tx-log" class="tx-log">
+          <div class="tx-empty">No transactions yet</div>
+        </div>
+      </div>
+
+      <button class="btn-ghost sm disconnect-btn" onclick="disconnect()">← Disconnect / Switch Account</button>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
