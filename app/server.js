@@ -73,7 +73,7 @@ function loadPartnerKey(pk, label) {
 }
 
 console.log(`\n⚖️  AI Breakup Arbitrator — Server`);
-console.log(`   Deployer: ${deployer.address}`);
+console.log(`   Deployer: ${deployer?.address || 'NOT SET'}`);
 loadPartnerKey(PARTNER_A_PK, 'Partner A');
 loadPartnerKey(PARTNER_B_PK, 'Partner B');
 console.log(`   Network:  GenLayer Studionet\n`);
