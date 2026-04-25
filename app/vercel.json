@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "contract.py"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
