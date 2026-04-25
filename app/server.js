@@ -204,10 +204,14 @@ app.get('/api/health', (_req, res) => {
     res.json({ ok: true, deployer: deployer.address, partners: [...partnerClients.keys()], network: 'studionet' });
 });
 
-app.listen(PORT, () => {
-    console.log(`✅  Server running at http://localhost:${PORT}`);
-    console.log(`   POST /api/deploy        — deploy contract`);
-    console.log(`   POST /api/call          — write contract function`);
-    console.log(`   GET  /api/tx/:hash      — poll deploy status`);
-    console.log(`   GET  /api/call/:hash    — poll write status\n`);
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`✅  Server running at http://localhost:${PORT}`);
+        console.log(`   POST /api/deploy        — deploy contract`);
+        console.log(`   POST /api/call          — write contract function`);
+        console.log(`   GET  /api/tx/:hash      — poll deploy status`);
+        console.log(`   GET  /api/call/:hash    — poll write status\n`);
+    });
+}
+
+export default app;
