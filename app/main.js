@@ -6,8 +6,6 @@ import { createClient, createAccount, generatePrivateKey, chains } from 'genlaye
 const STUDIONET = chains.studionet;
 // In production (Railway/Vercel), frontend is served by the same server → use relative URL
 const SERVER = import.meta.env.VITE_SERVER_URL || '';
-// Default contract deployed on GenLayer Studio
-const DEFAULT_CONTRACT = '0x73610F33Bf29a949fC2266a2b9F6C91240a66581';
 
 // ───────────────────────────────────────────────
 // LOCAL ACCOUNT — generated once, stored in localStorage
@@ -51,15 +49,12 @@ window.addEventListener('DOMContentLoaded', () => {
         el.textContent = localAddress;
     });
 
-    // Check URL for contract address, or use the default
+    // Check URL for contract address
     const urlContract = new URLSearchParams(window.location.search).get('c');
-    const activeContract = (urlContract && urlContract.startsWith('0x')) ? urlContract : DEFAULT_CONTRACT;
-    if (activeContract) {
-        contractAddress = activeContract;
-        document.getElementById('contract-input').value = activeContract;
-        if (urlContract) {
-            showToast('📋 Contract loaded from link', 'info');
-        }
+    if (urlContract && urlContract.startsWith('0x')) {
+        contractAddress = urlContract;
+        document.getElementById('contract-input').value = urlContract;
+        showToast('📋 Contract loaded from link', 'info');
     }
 });
 
