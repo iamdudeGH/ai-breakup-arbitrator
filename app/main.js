@@ -4,8 +4,6 @@ import { createClient, createAccount, generatePrivateKey, chains } from 'genlaye
 // CONFIG
 // ───────────────────────────────────────────────
 const STUDIONET = chains.studionet;
-// In production (Railway/Vercel), frontend is served by the same server → use relative URL
-const SERVER = import.meta.env.VITE_SERVER_URL || '';
 
 // ───────────────────────────────────────────────
 // LOCAL ACCOUNT — generated once, stored in localStorage
@@ -97,21 +95,25 @@ window.deployAndJoin = async function () {
 
     const statusEl = document.getElementById('deploy-status');
     statusEl.classList.remove('hidden');
-    statusEl.textContent = '⏳ Deploying contract…';
+    statusEl.textContent = '⏳ Fetching contract source…';
 
     try {
-        const res = await fetch(`${SERVER}/api/deploy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ partner_a: localAddress, partner_b: pbAddr }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Deploy failed');
+        const sourceRes = await fetch('/contract.py');
+        if (!sourceRes.ok) throw new Error('Failed to load contract source');
+        const contractCode = await sourceRes.text();
 
-        statusEl.textContent = `📤 Deploy tx sent!\n${data.hash}\n⏳ Waiting for consensus (~30-60s)…`;
-        pollDeploy(data.hash, statusEl);
+        statusEl.textContent = '⏳ Deploying contract to GenLayer Studionet…';
+
+        const hash = await client.deployContract({
+            code: contractCode,
+            args: [localAddress, pbAddr],
+            leaderOnly: false,
+        });
+
+        statusEl.textContent = `📤 Deploy tx sent!\n${hash}\n⏳ Waiting for consensus (~30-60s)…`;
+        pollDeploy(hash, statusEl);
     } catch (err) {
-        statusEl.textContent = `❌ ${err.message}\n\nMake sure the server is running:\n  node server.js`;
+        statusEl.textContent = `❌ ${err.message}`;
     }
 };
 
@@ -120,24 +122,26 @@ async function pollDeploy(hash, statusEl) {
     const iv = setInterval(async () => {
         attempts++;
         try {
-            const res = await fetch(`${SERVER}/api/tx/${hash}`);
-            const data = await res.json();
+            const tx = await client.getTransaction({ hash });
+            const statusName = tx?.statusName || '';
+            const leaderResult = tx?.consensus_data?.leader_receipt?.[0]?.result;
 
-            if (data.contractAddress) {
+            if (/FINALIZED/i.test(statusName)) {
                 clearInterval(iv);
-                contractAddress = data.contractAddress;
-                statusEl.textContent = `✅ Contract deployed!\n${contractAddress}\n\nShare the link with your partner!`;
-                showToast('🎉 Contract is live!', 'success');
-                await refreshStatus();
-                identifyRole();
-                showApp();
-                updateURL(contractAddress);
-            } else if (data.status === 'error') {
-                clearInterval(iv);
-                statusEl.textContent = `❌ Deploy failed: ${data.error}`;
+                if (leaderResult?.status === 'contract_error') {
+                    statusEl.textContent = `❌ Deploy failed: ${leaderResult.payload}`;
+                } else {
+                    contractAddress = tx.to_address;
+                    statusEl.textContent = `✅ Contract deployed!\n${contractAddress}\n\nShare the link with your partner!`;
+                    showToast('🎉 Contract is live!', 'success');
+                    await refreshStatus();
+                    identifyRole();
+                    showApp();
+                    updateURL(contractAddress);
+                }
             }
         } catch { /* keep polling */ }
-        if (attempts > 40) { clearInterval(iv); statusEl.textContent += '\n⚠️ Timeout — check server logs.'; }
+        if (attempts > 40) { clearInterval(iv); statusEl.textContent += '\n⚠️ Timeout — tx not confirmed.'; }
     }, 3000);
 }
 
