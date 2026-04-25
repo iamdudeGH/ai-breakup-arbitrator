@@ -19,23 +19,44 @@ const PARTNER_A_PK = process.env.PARTNER_A_KEY;
 const PARTNER_B_PK = process.env.PARTNER_B_KEY;
 
 if (!DEPLOYER_PK || DEPLOYER_PK.includes('YOUR_DEPLOYER')) {
-    console.error('\n❌  Set DEPLOYER_PRIVATE_KEY in .env before starting the server.\n');
-    process.exit(1);
+    console.error('\n❌  DEPLOYER_PRIVATE_KEY not set.\n');
+    // Don't process.exit() on Vercel — it kills the serverless function entirely
 }
 
-// Load contract source once at startup
-const CONTRACT_SOURCE = readFileSync(
-    join(__dirname, 'contract.py'),
-    'utf-8'
-);
+// Load contract source — try multiple paths for compatibility with Vercel's bundler
+let CONTRACT_SOURCE = '';
+const possiblePaths = [
+    join(__dirname, 'contract.py'),                      // local dev (same directory)
+    join(__dirname, '..', 'contract.py'),                 // Vercel: bundled in api/ subfolder
+    join(process.cwd(), 'contract.py'),                   // Vercel: project root via cwd
+    join(process.cwd(), 'app', 'contract.py'),            // Vercel: if root isn't set to app/
+];
+for (const p of possiblePaths) {
+    if (existsSync(p)) {
+        CONTRACT_SOURCE = readFileSync(p, 'utf-8');
+        console.log(`📄 Loaded contract from: ${p}`);
+        break;
+    }
+}
+if (!CONTRACT_SOURCE) {
+    console.error(`❌ contract.py not found. Searched:\n${possiblePaths.join('\n')}`);
+}
 
 // Create a persistent deployer client (for deploy + reads)
-const deployer = createAccount(DEPLOYER_PK);
-const deployerClient = createClient({
-    chain: chains.studionet,
-    endpoint: chains.studionet.rpcUrls.default.http[0],
-    account: deployer,
-});
+let deployer = null;
+let deployerClient = null;
+try {
+    if (DEPLOYER_PK) {
+        deployer = createAccount(DEPLOYER_PK);
+        deployerClient = createClient({
+            chain: chains.studionet,
+            endpoint: chains.studionet.rpcUrls.default.http[0],
+            account: deployer,
+        });
+    }
+} catch (err) {
+    console.error('❌ Failed to create deployer account:', err.message);
+}
 
 // Build a map of partner address → genlayer client (for write transactions)
 // Partners provide their Studionet private keys — stored server-side, never exposed to browser
@@ -79,6 +100,13 @@ if (existsSync(distPath)) {
 // Returns: { hash, status } — client polls for finalization
 // ─────────────────────────────────────────────
 app.post('/api/deploy', async (req, res) => {
+    if (!deployerClient) {
+        return res.status(500).json({ error: 'Server misconfigured: DEPLOYER_PRIVATE_KEY not set.' });
+    }
+    if (!CONTRACT_SOURCE) {
+        return res.status(500).json({ error: 'Server misconfigured: contract.py not found.' });
+    }
+
     const { partner_a, partner_b } = req.body;
 
     if (!partner_a?.startsWith('0x') || !partner_b?.startsWith('0x')) {
@@ -201,7 +229,17 @@ app.get('/api/call/:hash', async (req, res) => {
 // Health check
 // ─────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, deployer: deployer.address, partners: [...partnerClients.keys()], network: 'studionet' });
+    res.json({
+        ok: !!DEPLOYER_PK && !!CONTRACT_SOURCE,
+        deployer: deployer?.address || 'NOT SET',
+        partners: [...partnerClients.keys()],
+        network: 'studionet',
+        contractLoaded: !!CONTRACT_SOURCE,
+        contractLength: CONTRACT_SOURCE.length,
+        envSet: !!DEPLOYER_PK,
+        __dirname,
+        cwd: process.cwd(),
+    });
 });
 
 if (!process.env.VERCEL) {
